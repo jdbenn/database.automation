@@ -43,11 +43,12 @@ stages:
               targetFiles: |
                 $(projectDirectory)/schemas/.skeema
 
-          - task: Bash@3 
-            displayName: Apply Skeema Diff
+          - task: Bash@3
+            displayName: Deploy Skeema Changes
             inputs:
+              targetType: 'inline'
               script: |
-                cd $(projectDirectory)/schemas
                 skeema diff deploy
                 skeema push deploy
+              workingDirectory: '$(projectDirectory)/schemas'
             
