@@ -26,8 +26,6 @@ stages:
         workspace:
           clean: all
         steps:
-          - bash: echo "$(tools)"
-
           - bash:  $(tools)/sqlpackage /version
             displayName: SqlPackage Version
       
@@ -60,8 +58,13 @@ stages:
             inputs:
               targetType: inline
               script: |
-                $(tools)/sqlpackage /Action:Publish /SourceFile:"$(Build.ArtifactStagingDirectory)/out/AdventureWorks.dacpac" \
-                /TargetConnectionString:"Server=tcp:$(DbHost),$(DbPort);Initial Catalog=AdventureWorks;Persist Security Info=False;User ID=$(DbUser);Password=$(DbPassword);MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+                $(tools)/sqlpackage /Action:Publish \
+                  /SourceFile:"$(Build.ArtifactStagingDirectory)/out/AdventureWorks.dacpac" \
+                  /TargetServerName:"$(DbHost),$(DbPort)" \
+                  /TargetDatabaseName:"AdventureWorks" \
+                  /TargetUser:"$(DbUser)" \
+                  /TargetPassword:"$(DbPassword)" \
+                  /TargetEncryptConnection:False
 
 
             
