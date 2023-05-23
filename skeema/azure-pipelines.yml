@@ -46,8 +46,8 @@ stages:
           - task: Bash@3 
             displayName: Apply Skeema Diff
             inputs:
-              workingDirectory: $(projectDirectory)/schemas
               script: |
+                cd $(projectDirectory)/schemas
                 skeema diff deploy
                 skeema push deploy
             
