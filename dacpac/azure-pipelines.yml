@@ -16,11 +16,18 @@ stages:
     condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
     displayName: Deploy Database Changes
     jobs:
+
+
       - job: sqlPackage
         displayName: Build and Deploy Database
         workspace:
           clean: all
         steps:
+
+          - script: sqlpackage /version
+            workingDirectory: $HOME/.dotnet/tools
+            displayName: 'sql package version'
+
           - task: DotNetCoreCLI@2
             displayName: Build
             inputs:
@@ -45,14 +52,11 @@ stages:
                 echo "##vso[task.setvariable variable=DbUser;]$user"
                 echo "##vso[task.setvariable variable=DbPassword;]$password"
           
-          - script: sqlpackage /version
-            workingDirectory: ~/.dotnet/tools
-            displayName: 'sql package version'
-            
+
           - task: Bash@3
             displayName: Deploy Database
             inputs:
-              workingDirectory: ~/.dotnet/tools
+              workingDirectory: $HOME/.dotnet/tools
               targetType: inline
               script: |
                 sqlpackage /Action:Publish /SourceFile:"$(Build.ArtifactStagingDirectory)/out/AdventureWorks.dacpac" \
