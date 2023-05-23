@@ -1,0 +1,1 @@
+docker exec -i mysql bash < skeema.sh
