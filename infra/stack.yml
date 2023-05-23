@@ -25,10 +25,10 @@ Resources:
         - !Sub ${SecurityGroup.GroupId}
       DBInstanceIdentifier: DB-AUTOMATION-SQLSERVER
       LicenseModel: license-included
-      Engine: sqlserver-se
+      Engine: sqlserver-ex
       EngineVersion: 15.00.4236.7.v1
       MultiAZ: false
-      DBInstanceClass: db.t4g.micro
+      DBInstanceClass: db.t3.small
       AllocatedStorage: "20"
       PubliclyAccessible: true
       MasterUsername: 'admin'
