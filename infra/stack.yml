@@ -35,8 +35,31 @@ Resources:
       MasterUserPassword: 'Pass2Word!!01'
       BackupRetentionPeriod: 1
 
+  MySql:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      VPCSecurityGroups:
+        - !Sub ${SecurityGroup.GroupId}
+      DBInstanceIdentifier: DB-AUTOMATION-MYSQL
+      AllocatedStorage: "20"
+      AllowMajorVersionUpgrade: false
+      AutoMinorVersionUpgrade: true
+      BackupRetentionPeriod: 1
+      DBInstanceClass: db.t4g.micro
+      Engine: mysql
+      EngineVersion: 8.0.28
+      MultiAZ: false
+      PubliclyAccessible: true
+      MasterUsername: 'admin'
+      MasterUserPassword: 'Pass2Word!!01'
+
+
 
 Outputs:
    SQLDatabaseEndpoint:
-     Description: Database endpoint
+     Description: SQL Server Database endpoint
      Value: !Sub "${SqlServer.Endpoint.Address}:${SqlServer.Endpoint.Port}"
+
+   MySqlDatabaseEndpoint:
+     Description: MySql Database endpoint
+     Value: !Sub "${MySql.Endpoint.Address}:${MySql.Endpoint.Port}"
