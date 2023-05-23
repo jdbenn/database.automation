@@ -27,7 +27,7 @@ stages:
           clean: all
         steps:
           - script: sqlpackage /version
-            workingDirectory: $(tools)
+            workingDirectory: "$HOME/.dotnet/tools"
             displayName: SqlPackage Version
       
           - task: DotNetCoreCLI@2
