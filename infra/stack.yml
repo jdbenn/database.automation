@@ -39,4 +39,4 @@ Resources:
 Outputs:
    SQLDatabaseEndpoint:
      Description: Database endpoint
-     Value: !Sub "${SqlServer.Endpoint.Address}:${SQLDatabase.Endpoint.Port}"
+     Value: !Sub "${SqlServer.Endpoint.Address}:${SqlServer.Endpoint.Port}"
