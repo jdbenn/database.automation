@@ -2,122 +2,41 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: Database Automation Stack    
 
 Resources:
-  VPC:
-    Type: AWS::EC2::VPC
-    Properties:
-      CidrBlock: 10.0.0.0/16
-      EnableDnsSupport: true
-      EnableDnsHostnames: true
 
-  InternetGateway:
-    Type: AWS::EC2::InternetGateway
-
-  AttachGateway:
-    Type: AWS::EC2::VPCGatewayAttachment
-    Properties:
-      VpcId: !Ref VPC
-      InternetGatewayId: !Ref InternetGateway
-
-  PublicSubnetZoneA:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref VPC
-      CidrBlock: 10.0.1.0/24
-      AvailabilityZone: !Sub "${AWS::Region}a"
-      MapPublicIpOnLaunch: true
-
-  PrivateSubnetZoneA:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref VPC
-      CidrBlock: 10.0.2.0/24
-      MapPublicIpOnLaunch: false
-      AvailabilityZone: !Sub "${AWS::Region}a"
-
-  PublicRouteTable:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !Ref VPC
-
-  PublicIntenetRoute:
-    Type: AWS::EC2::Route
-    Properties:
-      RouteTableId: !Ref PublicRouteTable
-      DestinationCidrBlock: 0.0.0.0/0
-      GatewayId: !Ref InternetGateway
-
-  PublicSubnetRouteTableAssociationZoneA:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref PublicSubnetZoneA
-      RouteTableId: !Ref PublicRouteTable
-
-  PrivateRouteTable:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !Ref VPC
-
-  PrivateSubnetRouteTableAssociationZoneA:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref PrivateSubnetZoneA
-      RouteTableId: !Ref PrivateRouteTable
-
-  BastionHostSecurityGroup:
+  SecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      VpcId: !Ref VPC
-      GroupDescription: HTTP / HTTPS Traffic Allow
-      GroupName: App Security Group
-      SecurityGroupEgress:
-        - Description: Allow all outbound Traffic
-          IpProtocol: "-1"
-          CidrIp: 0.0.0.0/0
+      GroupDescription: Database Security Group
       SecurityGroupIngress:
-        - IpProtocol: "-1"
-          Description: All Traffic
-          CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: '1433'
+        ToPort: '1433'
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: '3306'
+        ToPort: '3306'
+        CidrIp: 0.0.0.0/0
 
-  DatabaseSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
+  SqlServer:
+    DependsOn: SecurityGroup
+    Type: AWS::RDS::DBInstance
     Properties:
-      VpcId: !Ref VPC
-      GroupDescription: Database Traffic Allow
-      GroupName: Db Security Group
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          Description: MySql
-          FromPort: 3306
-          ToPort: 3306
-        - IpProtocol: tcp
-          Description: SQL Server
-          FromPort: 1433 
-          ToPort: 1433
-          SourceSecurityGroupId: !Sub ${BastionHostSecurityGroup.GroupId}
+      VPCSecurityGroups:
+        - !Sub ${SecurityGroup.GroupId}
+      DBInstanceIdentifier: DB-AUTOMATION-SQLSERVER
+      LicenseModel: license-included
+      Engine: sqlserver-se
+      EngineVersion: 15.00.4236.7.v1
+      MultiAZ: false
+      DBInstanceClass: db.t4g.micro
+      AllocatedStorage: "20"
+      PubliclyAccessible: true
+      MasterUsername: 'admin'
+      MasterUserPassword: 'Pass2Word!!01'
+      BackupRetentionPeriod: 1
 
-  SSHSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      VpcId: !Ref VPC
-      GroupDescription: SSH Traffic Allow
-      GroupName: SSH Security Group
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          Description: SSH
-          FromPort: 22
-          ToPort: 22
-          CidrIp: 0.0.0.0/0
 
-  RDPSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      VpcId: !Ref VPC
-      GroupDescription: Allow RDP Traffic
-      GroupName: RDP Security Group
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          Description: RDP
-          FromPort: 3389
-          ToPort: 3389
-          CidrIp: 0.0.0.0/0
-
+Outputs:
+   SQLDatabaseEndpoint:
+     Description: Database endpoint
+     Value: !Sub "${SqlServer.Endpoint.Address}:${SQLDatabase.Endpoint.Port}"
