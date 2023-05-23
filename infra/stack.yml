@@ -1,6 +1,17 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: Database Automation Stack    
 
+Parameters:
+  
+  MasterDbUser:
+    Type: String
+    Default:  admin
+
+  MasterDbPassword:
+    Type: String
+    Default: Pass2Word!!01
+
+
 Resources:
 
   SecurityGroup:
@@ -31,8 +42,8 @@ Resources:
       DBInstanceClass: db.t3.small
       AllocatedStorage: "20"
       PubliclyAccessible: true
-      MasterUsername: 'admin'
-      MasterUserPassword: 'Pass2Word!!01'
+      MasterUsername: !Ref MasterDbUser
+      MasterUserPassword: !Ref MasterDbPassword
       BackupRetentionPeriod: 1
 
   MySql:
@@ -50,9 +61,55 @@ Resources:
       EngineVersion: 8.0.28
       MultiAZ: false
       PubliclyAccessible: true
-      MasterUsername: 'admin'
-      MasterUserPassword: 'Pass2Word!!01'
+      MasterUsername: !Ref MasterDbUser
+      MasterUserPassword: !Ref MasterDbPassword
 
+  SqlServerHostParameter:
+    DependsOn: SqlServer
+    Type:  AWS::SSM::Parameter
+    Properties:
+      Name: db-automation-sql-server-host
+      Type: String
+      Value: !Sub ${SqlServer.Endpoint.Address}
+
+  SqlServerPortParameter:
+    DependsOn: SqlServer
+    Type:  AWS::SSM::Parameter
+    Properties:
+      Name: db-automation-sql-server-port
+      Type: String
+      Value: !Sub ${SqlServer.Endpoint.Port}
+
+  MySqlHostParameter:
+    DependsOn: MySql
+    Type:  AWS::SSM::Parameter
+    Properties:
+      Name: db-automation-mysql-host
+      Type: String
+      Value: !Sub ${MySql.Endpoint.Address}
+
+  MySqlPortParameter:
+    DependsOn: MySql
+    Type:  AWS::SSM::Parameter
+    Properties:
+      Name: db-automation-mysql-port
+      Type: String
+      Value: !Sub ${MySql.Endpoint.Port}
+
+  MasterUserParameter:
+    Type:  AWS::SSM::Parameter
+    Properties:
+      Name: db-automation-user
+      Type: String
+      Value: !Ref MasterDbUser
+
+  MasterPasswordParameter:
+    DependsOn: MySql
+    Type:  AWS::SSM::Parameter
+    Properties:
+      Name: db-automation-password
+      Type: String
+      Value: !Ref MasterDbPassword
 
 
 Outputs:

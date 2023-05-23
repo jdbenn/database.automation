@@ -1,5 +1,12 @@
 generator=skeema:1.10.0-community
 
+[deploy]
+flavor=mysql:8.0
+host=#{DbHost}#
+port=#{DbPort}#
+user=#{DbUser}#
+password=#{DbPassword}#
+
 [local]
 flavor=mysql:8.0
 host=localhost
