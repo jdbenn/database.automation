@@ -1,0 +1,49 @@
+name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
+
+variables:
+
+  - name: projectDirectory
+    value: $(System.DefaultWorkingDirectory)/dacpac
+  - name: region
+    value: us-east-2
+  - name: DbHost
+  - name: DbPort
+  - name: DbUser
+  - name: DbPassword
+
+stages:
+  - stage: deployDatabase
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+    displayName: Deploy Database Changes
+    jobs:
+      - job: sqlPackage
+        displayName: Build and Deploy Database
+        workspace:
+          clean: all
+        steps:
+          - task: DotNetCoreCLI@2
+            displayName: Build
+            inputs:
+              command: build
+              projects: $(projectDirectory)/AdventureWorks/AdventureWorks.sqlproj
+              arguments: -o $(Build.ArtifactStagingDirectory)/out
+
+          - task: AWSShellScript@1
+            displayName: Update Pipeline Variables
+            inputs:
+              awsCredentials: "AWS"
+              regionName: "$(region)"
+              scriptType: "inline"
+              inlineScript: |
+                host=`aws ssm get-parameter --name db-automation-sql-server-host --region $(region) --query "Parameter.Value" --output text`
+                port=`aws ssm get-parameter --name db-automation-sql-server-port --region $(region) --query "Parameter.Value" --output text`
+                user=`aws ssm get-parameter --name db-automation-user --region $(region) --query "Parameter.Value" --output text`
+                password=`aws ssm get-parameter --name db-automation-password --region $(region) --query "Parameter.Value" --output text`
+
+                echo "##vso[task.setvariable variable=DbHost;]$host"
+                echo "##vso[task.setvariable variable=DbPort;]$port"
+                echo "##vso[task.setvariable variable=DbUser;]$user"
+                echo "##vso[task.setvariable variable=DbPassword;]$password"
+
+
+            
