@@ -26,7 +26,7 @@ stages:
         workspace:
           clean: all
         steps:
-          - script: sqlpackage /version
+          - bash:  sqlpackage /version
             workingDirectory: ~/.dotnet/tools
             displayName: SqlPackage Version
       
