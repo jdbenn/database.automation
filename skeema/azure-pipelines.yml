@@ -13,6 +13,7 @@ variables:
 
 stages:
   - stage: deployDatabase
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
     displayName: Deploy Database Changes
     jobs:
       - job: skeema
