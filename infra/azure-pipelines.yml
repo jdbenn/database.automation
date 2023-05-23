@@ -2,7 +2,7 @@ name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
 variables:
 
-  - name: projectDirectory
+  - name: infraDirectory
     value: $(System.DefaultWorkingDirectory)/infra
   - name: region
     value: us-east-2
@@ -16,7 +16,7 @@ stages:
     displayName: Apply Infrastructure Changes
     jobs:
       - job: cloudformation
-        displayName: Update Infrastructure
+        displayName: Deploy Cloud Formation Stack
         workspace:
           clean: all
         steps:
@@ -28,8 +28,8 @@ stages:
               scriptType: "inline"
               inlineScript: |
                 aws s3 mb s3://$(bucket)
-                aws cloudformation package --s3-bucket $(bucket) --template stack.yml --output-template template.yml
-                aws cloudformation deploy --template-file template.yml --stack-name $(stackName) \
+                aws cloudformation package --s3-bucket $(bucket) --template $(infraDirectory)/stack.yml --output-template $(infraDirectory)/template.yml
+                aws cloudformation deploy --template-file $(infraDirectory)/template.yml --stack-name $(stackName) \
                   --s3-bucket $(bucket) \
                   --capabilities CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND 
                 aws s3 rm --recursive s3://$(bucket) 
