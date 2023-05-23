@@ -12,7 +12,7 @@ variables:
   - name: DbPassword
   - name: sqlpackagePath
   - name: tools
-    value: ~/.dotnet/tools
+    value: "$HOME/.dotnet/tools"
 
 stages:
   - stage: deployDatabase
@@ -31,9 +31,7 @@ stages:
               targetType: inline
               script: |
                 echo "$(tools)"
-          
-          - script: echo $(sqlpackagePath)
-
+      
           - task: DotNetCoreCLI@2
             displayName: Build
             inputs:
