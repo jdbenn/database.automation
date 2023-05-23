@@ -16,12 +16,12 @@ stages:
     displayName: Deploy Database Changes
     jobs:
       - job: skeema
-        displayName: Run Skeema
+        displayName: Run Skeema Diff and Deploy
         workspace:
           clean: all
         steps:
           - task: AWSShellScript@1
-            displayName: Deploy
+            displayName: Update Pipeline Variables
             inputs:
               awsCredentials: "AWS"
               regionName: "$(region)"
@@ -38,10 +38,16 @@ stages:
                 echo "##vso[task.setvariable variable=DbPassword;]$password"
 
           - task: qetza.replacetokens.replacetokens-task.replacetokens@3
-            displayName: Update .skeema Config
+            displayName: Update .skeema Deploy Config
             inputs:
               targetFiles: |
                 $(projectDirectory)/schemas/.skeema
 
-          - bash: |
-              cat $(projectDirectory)/schemas/.skeema
+          - task: Bash@3 
+            displayName: Apply Skeema Diff
+            inputs:
+              workingDirectory: $(projectDirectory)/schemas
+              script: |
+                skeema diff deploy
+                skeema push deploy
+            
