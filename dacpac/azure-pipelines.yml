@@ -44,14 +44,18 @@ stages:
                 echo "##vso[task.setvariable variable=DbPort;]$port"
                 echo "##vso[task.setvariable variable=DbUser;]$user"
                 echo "##vso[task.setvariable variable=DbPassword;]$password"
-
+          
+          - script: sqlpackage /version
+            workingDirectory: ~/.dotnet/tools
+            displayName: 'sql package version'
+            
           - task: Bash@3
             displayName: Deploy Database
             inputs:
-              workingDirectory: $(Build.ArtifactStagingDirectory)/out
+              workingDirectory: ~/.dotnet/tools
               targetType: inline
               script: |
-                sqlpackage /Action:Publish /SourceFile:"AdventureWorks.dacpac" \
+                sqlpackage /Action:Publish /SourceFile:"$(Build.ArtifactStagingDirectory)/out/AdventureWorks.dacpac" \
                   /TargetConnectionString:"Server=tcp:$(DbHost),$(DbPort);Initial Catalog=AdventureWorks;User ID=$(DbUser);Password=$(DbPassword);Connection Timeout=30;"
 
 
