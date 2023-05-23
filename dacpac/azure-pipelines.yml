@@ -45,5 +45,13 @@ stages:
                 echo "##vso[task.setvariable variable=DbUser;]$user"
                 echo "##vso[task.setvariable variable=DbPassword;]$password"
 
+          - task: Bash@3
+            displayName: Deploy Database
+            inputs:
+              workingDirectory: $(Build.ArtifactStagingDirectory)/out
+              script: |
+                sqlpackage /Action:Publish /SourceFile:"AdventureWorks.dacpac" \
+                  /TargetConnectionString:"Server=tcp:$(DbHost),$(DbPort);Initial Catalog=AdventureWorks";User ID=$(DbUser);Password=$(DbPassword);Connection Timeout=30;"
+
 
             

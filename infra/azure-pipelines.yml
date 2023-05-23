@@ -13,6 +13,7 @@ variables:
 
 stages:
   - stage: applyInfra
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
     displayName: Apply Infrastructure Changes
     jobs:
       - job: cloudformation
