@@ -1,0 +1,37 @@
+name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
+
+variables:
+
+  - name: projectDirectory
+    value: $(System.DefaultWorkingDirectory)/infra
+  - name: region
+    value: us-east-2
+  - name: bucket
+    value: database-automation-bucket
+  - name: stackName
+    value: database-automation-stack
+
+stages:
+  - stage: applyInfra
+    displayName: Apply Infrastructure Changes
+    jobs:
+      - job: cloudformation
+        displayName: Update Infrastructure
+        workspace:
+          clean: all
+        steps:
+          - task: AWSShellScript@1
+            displayName: Update Stack
+            inputs:
+              awsCredentials: "AWS"
+              regionName: "$(region)"
+              scriptType: "inline"
+              inlineScript: |
+                aws s3 mb s3://$(bucket)
+                aws cloudformation package --s3-bucket $(bucket) --template stack.yml --output-template template.yml
+                aws cloudformation deploy --template-file template.yml --stack-name $(stackName) \
+                  --s3-bucket $(bucket) \
+                  --capabilities CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND 
+                aws s3 rm --recursive s3://$(bucket) 
+                aws s3 rb s3://$(bucket)
+
