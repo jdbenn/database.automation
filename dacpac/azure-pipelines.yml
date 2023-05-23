@@ -28,8 +28,7 @@ stages:
         steps:
           - bash: echo "$(tools)"
 
-          - bash:  sqlpackage /version
-            workingDirectory: $HOME/.dotnet/tools
+          - bash:  $(tools)/sqlpackage /version
             displayName: SqlPackage Version
       
           - task: DotNetCoreCLI@2
@@ -59,10 +58,9 @@ stages:
           - task: Bash@3
             displayName: Deploy Database
             inputs:
-              workingDirectory: $(tools)
               targetType: inline
               script: |
-                sqlpackage /Action:Publish /SourceFile:"$(Build.ArtifactStagingDirectory)/out/AdventureWorks.dacpac" \
+                $(tools)/sqlpackage /Action:Publish /SourceFile:"$(Build.ArtifactStagingDirectory)/out/AdventureWorks.dacpac" \
                   /TargetConnectionString:"Server=tcp:$(DbHost),$(DbPort);Initial Catalog=AdventureWorks;User ID=$(DbUser);Password=$(DbPassword);Connection Timeout=30;"
 
 
