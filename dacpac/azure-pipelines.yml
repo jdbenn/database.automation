@@ -26,11 +26,9 @@ stages:
         workspace:
           clean: all
         steps:
-          - task: Bash@3
-            inputs:
-              targetType: inline
-              script: |
-                echo "$(tools)"
+          - script: sqlpackage /version
+            workingDirectory: $(tools)
+            displayName: SqlPackage Version
       
           - task: DotNetCoreCLI@2
             displayName: Build
@@ -54,13 +52,12 @@ stages:
                 echo "##vso[task.setvariable variable=DbHost;]$host"
                 echo "##vso[task.setvariable variable=DbPort;]$port"
                 echo "##vso[task.setvariable variable=DbUser;]$user"
-                echo "##vso[task.setvariable variable=DbPassword;]$password"
-          
+                echo "##vso[task.setvariable variable=DbPassword;]$password"          
 
           - task: Bash@3
             displayName: Deploy Database
             inputs:
-              workingDirectory: $(sqlPackagePath)
+              workingDirectory: $(tools)
               targetType: inline
               script: |
                 sqlpackage /Action:Publish /SourceFile:"$(Build.ArtifactStagingDirectory)/out/AdventureWorks.dacpac" \
