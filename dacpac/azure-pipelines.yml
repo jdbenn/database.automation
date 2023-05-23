@@ -23,9 +23,9 @@ stages:
         workspace:
           clean: all
         steps:
-
+          - script: echo $HOME
           - script: sqlpackage /version
-            workingDirectory: $HOME/.dotnet/tools
+            workingDirectory: '$HOME/.dotnet/tools'
             displayName: 'sql package version'
 
           - task: DotNetCoreCLI@2
