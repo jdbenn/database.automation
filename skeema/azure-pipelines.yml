@@ -49,6 +49,6 @@ stages:
             inputs:
               targetType: 'inline'
               script: |
-                skeema diff deploy
-                skeema push deploy
+                skeema diff deploy --allow-unsafe
+                skeema push deploy --allow-unsafe
               workingDirectory: '$(projectDirectory)/schemas'
