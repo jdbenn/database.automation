@@ -1,2 +1,6 @@
 **/obj
 **/bin
+**/stack/node_modules
+**/node_modules
+.idea
+stack/.env
