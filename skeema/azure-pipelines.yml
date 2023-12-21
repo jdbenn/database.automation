@@ -31,7 +31,7 @@ stages:
                 host=`aws ssm get-parameter --name db-automation-mysql-host --region $(region) --query "Parameter.Value" --output text`
                 port=`aws ssm get-parameter --name db-automation-mysql-port --region $(region) --query "Parameter.Value" --output text`
                 user=`aws secretsmanager get-secret-value --secret-id db-automation-mysql-user --query "SecretString" --output text`
-                user=`aws secretsmanager get-secret-value --secret-id db-automation-mysql-password --query "SecretString" --output text`
+                password=`aws secretsmanager get-secret-value --secret-id db-automation-mysql-password --query "SecretString" --output text`
 
                 echo "##vso[task.setvariable variable=DbHost;]$host"
                 echo "##vso[task.setvariable variable=DbPort;]$port"
