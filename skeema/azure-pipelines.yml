@@ -24,7 +24,7 @@ stages:
           - task: AWSShellScript@1
             displayName: Update Pipeline Variables
             inputs:
-              awsCredentials: "AWS"
+              awsCredentials: "SPR"
               regionName: "$(region)"
               scriptType: "inline"
               inlineScript: |
