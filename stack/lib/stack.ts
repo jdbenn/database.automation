@@ -110,8 +110,7 @@ export class Stack extends cdk.Stack {
       machineImage: ec2.MachineImage.genericLinux(
         {'us-east-1': 'ami-06aa3f7caf3a30282',
                 'us-east-2': 'ami-05fb0b8c1424f266b'}),
-      keyName: keyName,
-      userDataCausesReplacement: true,
+      keyName: keyName
     });
     
     instance.addUserData(
