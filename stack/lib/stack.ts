@@ -3,6 +3,7 @@ import {SecretValue, StackProps} from 'aws-cdk-lib';
 import {Construct} from 'constructs';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as ec2 from "aws-cdk-lib/aws-ec2";
+import {SubnetType} from "aws-cdk-lib/aws-ec2";
 import * as fs from 'fs';
 import {
   CaCertificate,
@@ -51,7 +52,12 @@ export class Stack extends cdk.Stack {
         {
           cidrMask: 24,
           name: 'db-deploy-subnet',
-          subnetType: ec2.SubnetType.PUBLIC
+          subnetType: SubnetType.PUBLIC,
+        },
+        {
+          cidrMask: 28,
+          name: 'database-subnet',
+          subnetType: ec2.SubnetType.PRIVATE_ISOLATED
         }
       ]
     });
@@ -67,11 +73,7 @@ export class Stack extends cdk.Stack {
         ec2.Peer.anyIpv4(),
         ec2.Port.tcp(22)
       )
-      
-      securityGroup.addIngressRule(
-        ec2.Peer.anyIpv4(),
-        ec2.Port.tcp(3306)
-      )
+    
     
     const databaseInstance = new DatabaseInstance(this, 'mysql-instance', {
       vpcSubnets: {
@@ -79,7 +81,6 @@ export class Stack extends cdk.Stack {
         subnetType: ec2.SubnetType.PUBLIC
       },
       instanceIdentifier: 'database-automation',
-      securityGroups: [securityGroup],
       vpc: vpc,
       databaseName: 'DatabaseAutomation',
       allocatedStorage: 20,
