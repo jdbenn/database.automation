@@ -1,0 +1,19 @@
+{
+  "name": "@spr/database-automation",
+  "version": "1.0.0",
+  "description": "Tools and techniques for database deployment using MySql and Sql Server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/uuid": "^9.0.5",
+    "@typescript-eslint/eslint-plugin": "6.7.5",
+    "@typescript-eslint/parser": "6.7.5"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "^2.115.0"
+  }
+}
