@@ -48,4 +48,4 @@ jobs:
           skeema push deploy --allow-unsafe --debug
       - name: Run db-migrate
         run: |
-          node node_modules/db-migrate/bin/db-migrate up --config ./db-migrate/database.json -e deploy
+          node node_modules/db-migrate/bin/db-migrate up --config ./db-migrate/database.json -m ./db-migrate/migrations -e deploy

@@ -1,4 +1,3 @@
-
 INSERT INTO TestTable (FirstName, LastName)
-VALUES
-('JOHN', 'BENNETT')
+values
+('John', 'Bennett')
