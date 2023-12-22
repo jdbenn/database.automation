@@ -44,8 +44,8 @@ jobs:
       - name: Deploy Database
         working-directory: skeema/schemas
         run: |
-          skeema diff deploy --allow-unsafe
-          skeema push deploy --allow-unsafe
+          skeema diff deploy --allow-unsafe --debug
+          skeema push deploy --allow-unsafe --debug
       - name: Run db-migrate
         run: |
           node node_modules/db-migrate/bin/db-migrate up --config ./db-migrate/database.json -e deploy
