@@ -42,8 +42,8 @@ jobs:
         with:
           files: './skeema/schemas/.skeema'
       - name: Deploy Database
+        working-directory: skeema/schemas
         run: |
-          cd ./skeema/schemas
           skeema diff deploy --allow-unsafe
           skeema push deploy --allow-unsafe
       - name: Run db-migrate
