@@ -14,11 +14,6 @@ jobs:
     name: Deploy Dev
     runs-on: self-hosted
     environment: dev
-    env:
-      dbHost:
-      dbPort:
-      dbUser:
-      dbPwd:
     steps:
       - uses: actions/checkout@v3
         with:
@@ -30,18 +25,13 @@ jobs:
       - name: Get Database Credentials
         shell: bash
         run: |
-          dbHost=`aws ssm get-parameter --name db-automation-mysql-host --query "Parameter.Value" --output text`
-          dbPort=`aws ssm get-parameter --name db-automation-mysql-port --query "Parameter.Value" --output text`
-          dbUser=`aws secretsmanager get-secret-value --secret-id db-automation-mysql-user --query "SecretString" --output text`
-          dbPwd=`aws secretsmanager get-secret-value --secret-id db-automation-mysql-password --query "SecretString" --output text`
+          echo DB_HOST=`aws ssm get-parameter --name db-automation-mysql-host --query "Parameter.Value" --output text` >> $GITHUB_ENV
+          echo DB_PORT=`aws ssm get-parameter --name db-automation-mysql-port --query "Parameter.Value" --output text` >> $GITHUB_ENV
+          echo DB_USER=`aws secretsmanager get-secret-value --secret-id db-automation-mysql-user --query "SecretString" --output text` >> $GITHUB_ENV
+          echo DB_PASSWORD=`aws secretsmanager get-secret-value --secret-id db-automation-mysql-password --query "SecretString" --output text` >> $GITHUB_ENV
       - name: Replace Tokens in .skeema config
         uses: cschleiden/replace-tokens@v1
         with:
           files: './skeema/schemas/.skeema'
       - name: View
         run: cat ./skeema/schemas/.skeema
-        env:
-          HOST: ${{ env.dbHost }}
-          PORT: ${{ env.dbPort }}
-          USER: ${{ env.dbUser }}
-          PASSWORD: ${{ env.dbPwd }}
