@@ -1,3 +1,3 @@
-INSERT INTO TestTable (FirstName, LastName)
+INSERT INTO TestTable (id, FirstName, LastName)
 values
-('John', 'Bennett')
+(1, 'John', 'Bennett')
