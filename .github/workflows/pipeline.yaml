@@ -37,6 +37,6 @@ jobs:
       - name: Replace Tokens in .skeema config
         uses: cschleiden/replace-tokens@v1
         with:
-          files: skeema/.skeema
-      - name:
-        run: cat skeema/.skeema
+          files: './skeema/schemas/.skeema'
+      - name: View
+        run: cat ./skeema/schemas/.skeema
