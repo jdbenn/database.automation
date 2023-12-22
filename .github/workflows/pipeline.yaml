@@ -1,0 +1,38 @@
+name: deploy
+
+on:
+  push:
+    branches:
+      - main
+      - github
+permissions:
+  id-token: write
+  contents: read
+  actions: read
+jobs:
+  deployDev:
+    name: Deploy Dev
+    runs-on: self-hosted
+    environment: dev
+    env:
+      HOST: host
+      PORT: port
+      USER: user
+      PASSWORD: pwd
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: us-east-1
+      - name: Get Db Credentials
+        shell: bash
+        run: |
+          HOST=`aws ssm get-parameter --name db-automation-mysql-host --region $(region) --query "Parameter.Value" --output text`
+          PORT=`aws ssm get-parameter --name db-automation-mysql-port --region $(region) --query "Parameter.Value" --output text`
+          USER=`aws secretsmanager get-secret-value --secret-id db-automation-mysql-user --query "SecretString" --output text`
+          PASSWORD=`aws secretsmanager get-secret-value --secret-id db-automation-mysql-password --query "SecretString" --output text`
+          
+          echo "$HOST $PORT $USER $PASSWORD"
