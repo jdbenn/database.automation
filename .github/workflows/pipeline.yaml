@@ -42,10 +42,10 @@ jobs:
         with:
           files: './skeema/schemas/.skeema'
       - name: Deploy Database
-        working-directory: skeema/schemas
         run: |
           skeema diff deploy --allow-unsafe --debug
-          skeema push deploy --allow-unsafe --debug
+#          skeema push deploy --allow-unsafe --debug
+        working-directory: skeema/schemas
 #      - name: Run db-migrate
 #        run: |
 #          node node_modules/db-migrate/bin/db-migrate up --config ./db-migrate/database.json -m ./db-migrate/migrations -e deploy
