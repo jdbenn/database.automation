@@ -1,15 +1,15 @@
-generator=skeema:1.10.0-community
+generator=skeema:1.11.0-community
 
 [deploy]
 flavor=mysql:8.0
-host=#{DB_HOST}#
-port=#{DB_PORT}#
-user=#{DB_USER}#
-password=#{DB_PASSWORD}#
+skip-host
+skip-password
+skip-port
+skip-user
 
 [local]
 flavor=mysql:8.0
 host=localhost
+password=password
 port=3306
 user=root
-password=password
