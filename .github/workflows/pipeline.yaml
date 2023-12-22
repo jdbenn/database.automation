@@ -22,7 +22,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: us-east-1
-      - name: Get Database Credentials
+      - name: Set Creds
         shell: bash
         run: |
           echo DB_HOST=`aws ssm get-parameter --name db-automation-mysql-host --query "Parameter.Value" --output text` >> $GITHUB_ENV
@@ -33,5 +33,7 @@ jobs:
         uses: cschleiden/replace-tokens@v1
         with:
           files: './skeema/schemas/.skeema'
-      - name: View
-        run: cat ./skeema/schemas/.skeema
+      - name: Deploy Database
+        run: |
+          skeema diff deploy --allow-unsafe
+          skeema push deploy --allow-unsafe
