@@ -14,7 +14,14 @@ jobs:
     name: Deploy Dev
     runs-on: self-hosted
     environment: dev
+
     steps:
+      - name: 'Cleanup build folder'
+        run: |
+          ls -la ./
+          rm -rf ./* || true
+          rm -rf ./.??* || true
+          ls -la ./
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
@@ -31,7 +38,6 @@ jobs:
         with:
           aws-region: us-east-1
       - name: Set Creds
-        shell: bash
         run: |
           echo DB_HOST=`aws ssm get-parameter --name db-automation-mysql-host --query "Parameter.Value" --output text` >> $GITHUB_ENV
           echo DB_PORT=`aws ssm get-parameter --name db-automation-mysql-port --query "Parameter.Value" --output text` >> $GITHUB_ENV
@@ -41,10 +47,9 @@ jobs:
         uses: cschleiden/replace-tokens@v1
         with:
           files: './skeema/schemas/.skeema'
-      - name: Deploy Database
+      - name: deploy db
         run: |
           skeema diff deploy --allow-unsafe
-#          skeema push deploy --allow-unsafe --debug
 #      - name: Run db-migrate
 #        run: |
 #          node node_modules/db-migrate/bin/db-migrate up --config ./db-migrate/database.json -m ./db-migrate/migrations -e deploy
