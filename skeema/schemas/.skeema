@@ -2,10 +2,10 @@ generator=skeema:1.11.0-community
 
 [deploy]
 flavor=mysql:8.0
-skip-host
-skip-password
-skip-port
-skip-user
+host=#{DB_HOST}#
+password=#{DB_PASSWORD}#
+port=#{DB_PORT}#
+user=#{DB_USER}#
 
 [local]
 flavor=mysql:8.0
