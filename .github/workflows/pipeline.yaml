@@ -30,8 +30,8 @@ jobs:
       - name: Get Db Credentials
         shell: bash
         run: |
-          HOST=`aws ssm get-parameter --name db-automation-mysql-host --region $(region) --query "Parameter.Value" --output text`
-          PORT=`aws ssm get-parameter --name db-automation-mysql-port --region $(region) --query "Parameter.Value" --output text`
+          HOST=`aws ssm get-parameter --name db-automation-mysql-host --query "Parameter.Value" --output text`
+          PORT=`aws ssm get-parameter --name db-automation-mysql-port --query "Parameter.Value" --output text`
           USER=`aws secretsmanager get-secret-value --secret-id db-automation-mysql-user --query "SecretString" --output text`
           PASSWORD=`aws secretsmanager get-secret-value --secret-id db-automation-mysql-password --query "SecretString" --output text`
           
