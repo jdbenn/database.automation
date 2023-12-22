@@ -27,12 +27,16 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: us-east-1
-      - name: Get Db Credentials
+      - name: Get Database Credentials
         shell: bash
         run: |
           HOST=`aws ssm get-parameter --name db-automation-mysql-host --query "Parameter.Value" --output text`
           PORT=`aws ssm get-parameter --name db-automation-mysql-port --query "Parameter.Value" --output text`
           USER=`aws secretsmanager get-secret-value --secret-id db-automation-mysql-user --query "SecretString" --output text`
           PASSWORD=`aws secretsmanager get-secret-value --secret-id db-automation-mysql-password --query "SecretString" --output text`
-          
-          echo "$HOST $PORT $USER $PASSWORD"
+      - name: Replace Tokens in .skeema config
+        uses: cschleiden/replace-tokens@v1
+        with:
+          files: skeema/.skeema
+      - name:
+        run: cat skeema/.skeema
