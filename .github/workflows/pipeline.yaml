@@ -48,7 +48,7 @@ jobs:
         with:
           files: './skeema/schemas/.skeema'
       - name: db diff
-        if: always()
+        continue-on-error: true
         run: |
           skeema diff deploy --allow-unsafe
         working-directory: ./skeema/schemas
