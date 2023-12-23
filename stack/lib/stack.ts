@@ -3,7 +3,7 @@ import {SecretValue, StackProps} from 'aws-cdk-lib';
 import {Construct} from 'constructs';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as ec2 from "aws-cdk-lib/aws-ec2";
-import {SubnetType} from "aws-cdk-lib/aws-ec2";
+import {SubnetType, UserData} from "aws-cdk-lib/aws-ec2";
 import * as fs from 'fs';
 import {
   CaCertificate,
@@ -14,6 +14,7 @@ import {
 } from 'aws-cdk-lib/aws-rds';
 import {Secret} from "aws-cdk-lib/aws-secretsmanager";
 import {ManagedPolicy} from "aws-cdk-lib/aws-iam";
+import {readFileSync} from "node:fs";
 
 
 require('dotenv').config();
@@ -94,8 +95,7 @@ export class Stack extends cdk.Stack {
       managedPolicies: [ ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore')]
     });
     
-   
-    const instance = new ec2.Instance(this, 'db-deploy-instance', {
+    const instance = new ec2.Instance(this, 'db-deploy-instance-new', {
       vpc: vpc,
       role: role,
       securityGroup: securityGroup,
@@ -106,9 +106,13 @@ export class Stack extends cdk.Stack {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
       machineImage: ec2.MachineImage.genericLinux(
         {'us-east-1': 'ami-06aa3f7caf3a30282',
-                'us-east-2': 'ami-05fb0b8c1424f266b'}),
-      keyName: keyName
+          'us-east-2': 'ami-05fb0b8c1424f266b'}),
+      keyName: keyName,
+      userDataCausesReplacement: true
     });
+    instance.addUserData(
+      readFileSync('./lib/user-data.sh', 'utf8')
+    );
 
     databaseInstance.connections.allowFrom(instance, ec2.Port.tcp(3306));
     
@@ -138,15 +142,14 @@ export class Stack extends cdk.Stack {
     userSecret.grantRead(role);
     passwordSecret.grantRead(role);
     
-    new cdk.CfnOutput(this, 'db-deploy-instance-output', {
+    
+    new cdk.CfnOutput(this, 'db-deploy-new-instance-output', {
       value: instance.instancePublicIp
     });
     
     new cdk.CfnOutput(this, 'db-deploy-database-endpoint-output', {
       value: databaseInstance.dbInstanceEndpointAddress
     });
-    
-
     
   }
 }
