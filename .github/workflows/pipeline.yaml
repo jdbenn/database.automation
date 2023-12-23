@@ -47,9 +47,13 @@ jobs:
         uses: cschleiden/replace-tokens@v1
         with:
           files: './skeema/schemas/.skeema'
-      - name: deploy db
+      - name: db diff
+        if: always()
         run: |
           skeema diff deploy --allow-unsafe
+        working-directory: ./skeema/schemas
+      - name: deploy db
+        run: |
           skeema push deploy --allow-unsafe
         working-directory: ./skeema/schemas
       - name: Run db-migrate
