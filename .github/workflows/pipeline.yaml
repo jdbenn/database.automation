@@ -1,0 +1,61 @@
+name: deploy
+
+on:
+  push:
+    branches:
+      - main
+      - github
+permissions:
+  id-token: write
+  contents: read
+  actions: read
+jobs:
+  deployDev:
+    name: Deploy Dev
+    runs-on: self-hosted
+    environment: dev
+
+    steps:
+      - name: 'Cleanup build folder'
+        run: |
+          ls -la ./
+          rm -rf ./* || true
+          rm -rf ./.??* || true
+          ls -la ./
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Set Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18.x
+      - name: Install
+        uses: borales/actions-yarn@v4
+        with:
+          cmd: install
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: us-east-1
+      - name: Set Creds
+        run: |
+          echo DB_HOST=`aws ssm get-parameter --name db-automation-mysql-host --query "Parameter.Value" --output text` >> $GITHUB_ENV
+          echo DB_PORT=`aws ssm get-parameter --name db-automation-mysql-port --query "Parameter.Value" --output text` >> $GITHUB_ENV
+          echo DB_USER=`aws secretsmanager get-secret-value --secret-id db-automation-mysql-user --query "SecretString" --output text` >> $GITHUB_ENV
+          echo DB_PASSWORD=`aws secretsmanager get-secret-value --secret-id db-automation-mysql-password --query "SecretString" --output text` >> $GITHUB_ENV
+      - name: Replace Tokens in .skeema config
+        uses: cschleiden/replace-tokens@v1
+        with:
+          files: './skeema/schemas/.skeema'
+      - name: db diff
+        continue-on-error: true
+        run: |
+          skeema diff deploy --allow-unsafe
+        working-directory: ./skeema/schemas
+      - name: deploy db
+        run: |
+          skeema push deploy --allow-unsafe
+        working-directory: ./skeema/schemas
+      - name: Run db-migrate
+        run: |
+          node node_modules/db-migrate/bin/db-migrate up --config ./db-migrate/database.json -m ./db-migrate/migrations -e deploy
