@@ -13,6 +13,7 @@ import {
   MysqlEngineVersion
 } from 'aws-cdk-lib/aws-rds';
 import {Secret} from "aws-cdk-lib/aws-secretsmanager";
+import {ManagedPolicy} from "aws-cdk-lib/aws-iam";
 
 
 require('dotenv').config();
@@ -88,7 +89,9 @@ export class Stack extends cdk.Stack {
     
     
     const role = new iam.Role(this, 'ec2-role', {
+      roleName: 'db-deploy-role',
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+      managedPolicies: [ ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore')]
     });
     
    
@@ -110,26 +113,31 @@ export class Stack extends cdk.Stack {
     databaseInstance.connections.allowFrom(instance, ec2.Port.tcp(3306));
     
     
-    new cdk.aws_ssm.StringParameter(this, 'db-host-param', {
+    const hostParam =new cdk.aws_ssm.StringParameter(this, 'db-host-param', {
       parameterName: 'db-automation-mysql-host',
       stringValue: databaseInstance.dbInstanceEndpointAddress
     });
     
-    new cdk.aws_ssm.StringParameter(this, 'db-port-param', {
+    const portParam = new cdk.aws_ssm.StringParameter(this, 'db-port-param', {
       parameterName: 'db-automation-mysql-port',
       stringValue: '3306'
     });
     
-    new Secret(this, 'db-user-secret', {
+    const userSecret = new Secret(this, 'db-user-secret', {
       secretName: 'db-automation-mysql-user',
       secretStringValue: SecretValue.unsafePlainText(user)
     });
     
-    new Secret(this, 'db-password-secret', {
+    const passwordSecret = new Secret(this, 'db-password-secret', {
       secretName: 'db-automation-mysql-password',
       secretStringValue: SecretValue.unsafePlainText(password)
     });
-
+    
+    hostParam.grantRead(role);
+    portParam.grantRead(role);
+    userSecret.grantRead(role);
+    passwordSecret.grantRead(role);
+    
     new cdk.CfnOutput(this, 'db-deploy-instance-output', {
       value: instance.instancePublicIp
     });
@@ -137,6 +145,8 @@ export class Stack extends cdk.Stack {
     new cdk.CfnOutput(this, 'db-deploy-database-endpoint-output', {
       value: databaseInstance.dbInstanceEndpointAddress
     });
+    
+
     
   }
 }
