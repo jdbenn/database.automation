@@ -73,7 +73,7 @@ export class Stack extends cdk.Stack {
     const databaseInstance = new DatabaseInstance(this, 'mysql-instance', {
       vpcSubnets: {
         onePerAz: true,
-        subnetType: ec2.SubnetType.PUBLIC
+        subnetType: ec2.SubnetType.PRIVATE_ISOLATED
       },
       instanceIdentifier: 'database-automation',
       vpc: vpc,
@@ -91,8 +91,7 @@ export class Stack extends cdk.Stack {
     
     const role = new iam.Role(this, 'ec2-role', {
       roleName: 'db-deploy-role',
-      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
-      managedPolicies: [ ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore')]
+      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
     });
     
     const instance = new ec2.Instance(this, 'db-deploy-instance-new', {
@@ -110,6 +109,7 @@ export class Stack extends cdk.Stack {
       keyName: keyName,
       userDataCausesReplacement: true
     });
+
     instance.addUserData(
       readFileSync('./lib/user-data.sh', 'utf8')
     );
@@ -121,7 +121,7 @@ export class Stack extends cdk.Stack {
       parameterName: 'db-automation-mysql-host',
       stringValue: databaseInstance.dbInstanceEndpointAddress
     });
-    
+
     const portParam = new cdk.aws_ssm.StringParameter(this, 'db-port-param', {
       parameterName: 'db-automation-mysql-port',
       stringValue: '3306'
