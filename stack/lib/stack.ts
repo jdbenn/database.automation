@@ -109,7 +109,7 @@ export class Stack extends cdk.Stack {
       keyName: keyName,
       userDataCausesReplacement: true
     });
-    
+
     instance.addUserData(
       readFileSync('./lib/user-data.sh', 'utf8')
     );
