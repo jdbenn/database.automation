@@ -295,4 +295,4 @@ mysql>show databases;
 
 The stack is now ready (almost).
 
-[Home](../README.md)
+[Home](../ReadMe.md)
