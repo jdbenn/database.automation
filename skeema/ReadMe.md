@@ -112,15 +112,9 @@ mysql>show databases;
 
 ##### Adventure Works
 
-I found a MySql version of the time honored [Adventure Works](schemas/AdventureWorks) database.  
-
-So we are going to deploy a fresh copy of the Adventure Works schema to our running mysql container.
-
-Instead of manually running shell scripts we will build a few helper scripts.
-
-The first is the script we want to run against the container.  [skeema.sh](skeema.sh)
-
-Before we go into the commands in the script, I want to briefly describe how the skeema cli works.  
+I found a MySql version of the time honored [Adventure Works](schemas/AdventureWorks) database.  So we are going to deploy 
+a fresh copy of the Adventure Works schema to our running mysql container. Before we go into the commands in the script, 
+I want to briefly describe how the skeema cli works.  
 
 The first thing to point out is the configuration file [.skeema](schemas/.skeema).
 
@@ -220,3 +214,8 @@ After running this we se no differences:
 ```
 
 ##### Getting Updates from Source and Applying
+
+I have applied a change to the model - adding a "TestTable" to the schema - from a different machine.  In typical workflow we 
+will pull the latest from source and create a new branch to work with.  
+
+This time we will make sure our local copy of the database is sync'd up. 
