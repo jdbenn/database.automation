@@ -46,8 +46,8 @@ Our first step is to define a [dockerfile](dockerfile) which will contain the my
 FROM ubuntu/mysql
 RUN apt-get update
 RUN apt-get -y install curl
-RUN curl -LO https://github.com/skeema/skeema/releases/latest/download/skeema_arm64.deb
-RUN apt install ./skeema_arm64.deb
+RUN curl -LO https://github.com/skeema/skeema/releases/latest/download/skeema_amd64.deb
+RUN apt install ./skeema_amd64.deb
 ```
 
 Not a lot of magic here.  Our image is based on the ubuntu/mysql image.  We then use the same instructions we used 
@@ -225,4 +225,49 @@ After running this we se no differences:
 I have applied a change to the model - adding a "TestTable" to the schema - from a different machine.  In typical workflow we 
 will pull the latest from source and create a new branch to work with.  
 
-This time we will make sure our local copy of the database is sync'd up. 
+After pulling the latest code from source control, there is now a table called [testtable.sql](schemas/AdventureWorks/testtable.sql)
+in the AdventureWorks schema.
+
+All we need to do is update our local database:
+
+```bash
+sh update-database.sh
+```
+
+or 
+
+```powershell
+PS /Users/johnbennett>update-database.ps1
+```
+
+Login to the container again and connect to the database:
+
+```shell
+docker exec -it mysql bash
+mysql -h localhost -u root -ppassword
+mysql>show tables in AdventureWorks;
+```
+
+```text
+| Sales_ShoppingCartItem                           |
+| Sales_SpecialOffer                               |
+| Sales_SpecialOfferProduct                        |
+| Sales_Store                                      |
+| TestTable                                        |
+| dbo_AWBuildVersion                               |
+| dbo_DatabaseLog                                  |
+| dbo_ErrorLog                                     |
++--------------------------------------------------+
+72 rows in set (0.00 sec)
+
+mysql> 
+```
+
+So we have seen how to put a MySql database under source control using a state based approach.  We are able to define tables 
+and other MySql objects, commit them and update local copies of the database.  
+
+In a real world scenario database changes would like be a dependency for application code changes.  Having our database 
+code changes live with the same commit as our application code changes ensures we have the corresponding database requirements 
+in place prior to running the application (data excluded).
+
+This only solves the development problem.  We now need to get these changes deployed to the working environment.  
