@@ -32,6 +32,10 @@ jobs:
         uses: borales/actions-yarn@v4
         with:
           cmd: install
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: us-east-1
       - name: Set Database Credentials
         run: |
           echo DB_HOST=`aws ssm get-parameter --name db-automation-mysql-host --query "Parameter.Value" --output text` >> $GITHUB_ENV
