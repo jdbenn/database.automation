@@ -195,12 +195,19 @@ mysql>show tables in AdventureWorks;
 
 Logging in to the container and running the diff and update commands is tedious.  So I have provided a few helper scripts. 
 
-[update-database.sh](update-database.sh) and [skeema.sh](skeema.sh).
+[update-database.sh](update-database.sh) / [update-database.ps1](update-database.ps1) and [skeema.sh](skeema.sh).
 
 Now all we need to do to apply changes is:
 
+
 ```shell
 sh update-databash.sh
+```
+
+or 
+
+```powershell
+PS /users/johnbennett>update-database.ps1
 ```
 
 After running this we se no differences:
