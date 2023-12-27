@@ -32,11 +32,7 @@ jobs:
         uses: borales/actions-yarn@v4
         with:
           cmd: install
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-region: us-east-1
-      - name: Set Creds
+      - name: Set Database Credentials
         run: |
           echo DB_HOST=`aws ssm get-parameter --name db-automation-mysql-host --query "Parameter.Value" --output text` >> $GITHUB_ENV
           echo DB_PORT=`aws ssm get-parameter --name db-automation-mysql-port --query "Parameter.Value" --output text` >> $GITHUB_ENV
@@ -50,6 +46,3 @@ jobs:
         run: |
           skeema push deploy --allow-unsafe
         working-directory: ./skeema/schemas
-      - name: Run db-migrate
-        run: |
-          node node_modules/db-migrate/bin/db-migrate up --config ./db-migrate/database.json -m ./db-migrate/migrations -e deploy
