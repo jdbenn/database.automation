@@ -439,3 +439,70 @@ Note how the environment variables names in step 5 match the tokens in the file.
           skeema push deploy --allow-unsafe
         working-directory: ./skeema/schemas
 ```
+
+The moment of truth.
+
+Push your changes to Github.  Create a pull request and complete the PR.
+
+You will see your pipeline action trigger and if everything was done right - the database will be deployed to the RDS instance.
+
+![](docs/images/deploy.png)
+
+To test our deployment - ssh into the box and connect to the RDS instance.
+
+```bash
+ssh ubuntu@{your instance ip}
+mysql -h {your database endpoint} -u root -ppassword
+mysql>show databases;
+```
+
+```text
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| AdventureWorks     |
+| DatabaseAutomation |
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+6 rows in set (0.01 sec)
+
+mysql> 
+
+```
+
+List the tables in the AdventureWorks database:
+
+```bash
+show tables in AdventureWorks;
+```
+```text
+| Sales_SalesReason                                |
+| Sales_SalesTaxRate                               |
+| Sales_SalesTerritory                             |
+| Sales_SalesTerritoryHistory                      |
+| Sales_ShoppingCartItem                           |
+| Sales_SpecialOffer                               |
+| Sales_SpecialOfferProduct                        |
+| Sales_Store                                      |
+| TestTable                                        |
+| dbo_AWBuildVersion                               |
+| dbo_DatabaseLog                                  |
+| dbo_ErrorLog                                     |
++--------------------------------------------------+
+72 rows in set (0.00 sec)
+
+mysql> 
+
+```
+
+#### Voila!
+
+### Conclusion
+
+To Do:  Write good and bad
+
+[Home](../ReadMe.md)
