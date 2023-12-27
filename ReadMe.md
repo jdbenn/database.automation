@@ -30,4 +30,5 @@ Our starting point will be with the stack deployment.  Once the stack is deploye
 detail on different tools and techniques for database deployment.  
 
 1. [Stack Deployment](stack/Stack-Deployment.md)
-2. [Skeema](skeema/ReadMe.md)
+2. [Github Runner](.github/Runner.md)
+3. [Skeema](skeema/Skeema.md)

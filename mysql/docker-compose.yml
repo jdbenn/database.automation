@@ -1,4 +1,4 @@
-version: '3.1'
+version: '3.3'
 
 services:
 
@@ -10,4 +10,4 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: password
     volumes:
-      - ./schemas:/var/schemas
+      - ../skeema/schemas:/var/schemas
