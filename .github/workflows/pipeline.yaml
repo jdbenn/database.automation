@@ -38,10 +38,21 @@ jobs:
           aws-region: us-east-1
       - name: Set Database Credentials
         run: |
-          echo DB_HOST=`aws ssm get-parameter --name db-automation-mysql-host --query "Parameter.Value" --output text` >> $GITHUB_ENV
-          echo DB_PORT=`aws ssm get-parameter --name db-automation-mysql-port --query "Parameter.Value" --output text` >> $GITHUB_ENV
-          echo DB_USER=`aws secretsmanager get-secret-value --secret-id db-automation-mysql-user --query "SecretString" --output text` >> $GITHUB_ENV
-          echo DB_PASSWORD=`aws secretsmanager get-secret-value --secret-id db-automation-mysql-password --query "SecretString" --output text` >> $GITHUB_ENV
+          echo DB_HOST=`aws ssm get-parameter --name db-automation-mysql-host --query "Parameter.Value" --output text`
+          echo DB_PORT=`aws ssm get-parameter --name db-automation-mysql-port --query "Parameter.Value" --output text`
+          echo DB_USER=`aws secretsmanager get-secret-value --secret-id db-automation-mysql-user --query "SecretString" --output text`
+          echo DB_PASSWORD=`aws secretsmanager get-secret-value --secret-id db-automation-mysql-password --query "SecretString" --output text`
+          
+          echo "::add-mask::$DB_HOST"
+          echo "::add-mask::$DB_PORT"
+          echo "::add-mask::$DB_USER"
+          echo "::add-mask::$DB_PASSWORD"
+          
+          echo "DB_HOST=$DB_HOST" >> $GITHUB_ENV
+          echo "DB_PORT=$DB_PORT" >> $GITHUB_ENV
+          echo "DB_USER=$DB_USER" >> $GITHUB_ENV
+          echo "DB_PASSWORD=$DB_PASSWORD" >> $GITHUB_ENV
+
       - name: Replace Tokens in .skeema config
         uses: cschleiden/replace-tokens@v1
         with:
