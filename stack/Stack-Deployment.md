@@ -1,7 +1,4 @@
-<style>
-.primary { color:#C5CAE9 }
-.accent { color:#FF4081 }
-</style>
+
 
 <h1 class="primary">Deployment</h1>
 I am using the AWS CDK as my weapon of choice for the IAC problem.  Let's walk through each portion of the stack to get 
