@@ -500,7 +500,6 @@ mysql>
 ```
 
 <h2 class="accent">Voila!</h2>
-![](https://media.tenor.com/LR_dHsvieaMAAAAM/king-mic-drop.gif)
 
 <h1 class="primary">Conclusion</h1>
 
