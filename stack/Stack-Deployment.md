@@ -1,10 +1,13 @@
-### Stack Deployment
+<style>
+.primary { color:#C5CAE9 }
+.accent { color:#FF4081 }
+</style>
 
+<h1 class="primary">Deployment</h1>
 I am using the AWS CDK as my weapon of choice for the IAC problem.  Let's walk through each portion of the stack to get 
 an understanding of how this will accomplish the task. 
 
-### Create SSH Key
-
+<h3 class="accent">Create SSH Key</h3>
 In the AWS console, you will need to [create an ssh key](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html) to allow for access to the host. I have created a key ***jbennett*** 
 by importing my public id_rsa.pub signature into the console.
 
@@ -38,8 +41,7 @@ keyName={your ssh key name}
 I am deploying this to us-east-1 and my keyName is ***jbennett***.  Obviously the dbUser and dbPassword are the secure - 
 but this was kept simple for the purposes of illustration.  
 
-### Stack Explanation
-
+<h3 class="accent">Stack Explained</h3>
 Referencing the [stack.ts](lib/stack.ts) file the first thing we do is initialize the environment variables the stack will use 
 from our .env file.  
 
