@@ -1,6 +1,11 @@
-### [Skeema](https://skeema.io)
+<style>
+.primary { color:#C5CAE9 }
+.accent { color:#FF4081 }
+</style>
 
-Skeema is a state based database management tool for MySql databases.  You define the state you want your database to be in
+<h1 class="primary">Skeema</h1>
+
+[Skeema](https://skeema.io) is a state based database management tool for MySql databases.  You define the state you want your database to be in
 through a series of create statements that represent your database objects; the tool then compares your model state to the 
 target database state and applies the changes.
 
@@ -11,9 +16,7 @@ The problem with this type of approach is that it takes a brute force approach t
 
 ![hulk smash](https://preview.redd.it/is-there-any-hulk-figure-that-can-do-the-classic-hulk-smash-v0-p8ix9i8wa5na1.jpg?auto=webp&s=202fa2e54cab55276f04ee0a6ff709687dcff56e)
 
-
-
-### Local Development Set-up
+<h3 class="accent">Local Environment Set-Up</h3>
 
 There are 3 versions of the skeema cli available.  
 
@@ -30,7 +33,7 @@ For the purpose of this demonstration the community edition will serve what we n
 
 We are going to use Docker to get around the platform limitations.  
 
-##### Docker
+<h3 class="accent">Docker</h3>
 
 The way we can get around the limitation of Linux or Mac for the community edition is to build our own docker image with the 
 skeema cli installed.  
@@ -116,7 +119,7 @@ mysql>show databases;
 
 ![empty instance](docs/images/empty.png)
 
-##### Adventure Works
+<h3 class="accent">Adventure Works</h3>
 
 I found a MySql version of the time honored [Adventure Works](schemas/AdventureWorks) database.  So we are going to deploy 
 a fresh copy of the Adventure Works schema to our running mysql container. Before we go into the commands in the script, 
@@ -226,7 +229,7 @@ After running this we se no differences:
 2023-12-25 23:11:04 [INFO]  localhost:3306 AdventureWorks: No differences found
 ```
 
-##### Getting Updates from Source and Applying
+<h3 class="accent">Applying Changes from Source</h3>
 
 I have applied a change to the model - adding a "TestTable" to the schema - from a different machine.  In typical workflow we 
 will pull the latest from source and create a new branch to work with.  
@@ -280,7 +283,7 @@ This only solves the development problem.  We now need to get these changes depl
 
 [Home](../ReadMe.md)
 
-### CI/CD Set-Up
+<h1 class="primary">CICD Set-Up</h1>
 
 **STOP** : If you have not done so already - make sure you configure the bastion host as a [Github Runner](../.github/Runner.md) before proceeding.
 
@@ -499,10 +502,81 @@ mysql>
 
 ```
 
-#### Voila!
+<h2 class="accent">Voila!</h2>
+![](https://media.tenor.com/LR_dHsvieaMAAAAM/king-mic-drop.gif)
 
-### Conclusion
+<h1 class="primary">Conclusion</h1>
 
-To Do:  Write good and bad
+Let's compare Skeema against our requirements:
+
+ - [X] History of Changes
+ - [X] Changes Deployed with Application Code
+ - [ ] Ability to Add / Update Seed Data
+ - [ ] Apply Changes Without Data Loss
+ - [X] Local Development Support
+ - [X] Completely Automated
+ - [X] Language Agnostic
+ - [X] Rollback
+ - [X] Scaffold from Existing
+
+<h3 class="accent">History of Changes</h3>
+The fact the current state of the database is maintained as it is deployed in the form of SQL files representing the objects
+makes it really easy to read / understand.  Each file has the benefit of being tracked by source control, so we get to see the 
+evolution of the file (object over time).
+
+<h3 class="accent">Changes Deployed with Application Code</h3>
+Since our database definition lives with the application code, we ensure that databases deployments occur with the application code.
+
+<h3 class="accent">Ability to Add / Update Seed Data</h3>
+It should be noted that premium versions of Skeema support [seeding](https://www.skeema.io/docs/options/#update-seed-inserts) with insert only if the table is empty.
+This partially supports the requirement but not fully.  It does not fully address the idea of maintaining configuration in databases and
+source control.  
+
+<h3 class="accent">Apply Changes Without Data Loss</h3>
+If the changes made to the database are destructive, we would need help from an external tool or process to assist in migrating 
+the database from the current state to the target state.  This might involve backing up a table to a temporary table, applying the change 
+and then updating the modified table with the backed up data.  
+
+<h3 class="accent">Local Development Support</h3>
+Even with the free version limitations (no PC support) we can create a seamless experience to get and maintain local copies of the
+database.  
+
+<h3 class="accent">Completely Automated</h3>
+It is completely automated - no additional human help is needed once the deployment starts.
+
+<h3 class="accent">Language Agnostic</h3>
+The database is represented as Create statements in SQL.
+
+<h3 class="accent">Rollback</h3>
+Assuming the change did not require manual intervention before the migration then Rollback is supported. 
+
+<h3 class="accent">Scaffold from Existing</h3>
+The skeema cli feels very much like git in through the "push" and "pull" commands.  As demonstrated
+
+```shell
+skeema push local
+```
+
+Will push our model onto a target database.
+
+As it implies, pull does just the opposite:
+
+```shell
+skeema pull local
+```
+
+Will look at the target database and create the .sql files on our file system.  
+
+We could define a directory "AdventureWorks" and a .skeema configuration file.  Run the command and the objects 
+would be created in our repo.  
+
+
+<h3 class="accent">Closing Thoughts</h3>
+Skeema is a really nice tool for MySql databases.  The state based approach feels natural for most source control systems 
+and SDLC's.  It does have some limitations when it comes to adding data through an automated deployment process and destructive
+database migrations require some manual help.
+
+Skeema is a nice choice if the last 2 scenarios are a rare occurrence.  However, if the database schema is still in a
+volatile state (i.e. early development), it may not be the best tool if data loss is a concern.  
 
 [Home](../ReadMe.md)
