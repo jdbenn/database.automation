@@ -1,7 +1,4 @@
-<style>
-.primary { color:#C5CAE9 }
-.accent { color:#FF4081 }
-</style>
+
 
 <h1 class="primary">Skeema</h1>
 
